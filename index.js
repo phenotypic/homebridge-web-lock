@@ -39,25 +39,24 @@ function HTTPLock (log, config) {
 
   this.log(this.name)
 
-  var self = this
   this.server = http.createServer(function (request, response) {
     var parts = request.url.split('/')
     var partOne = parts[parts.length - 2]
     var partTwo = parts[parts.length - 1]
     var requestArray = ['lockTargetState', 'lockCurrentState']
     if (requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
-      self.log('[*] Handling request: %s', request.url)
+      this.log('[*] Handling request: %s', request.url)
       response.end('Handling request')
-      self._httpHandler(partOne, partTwo)
+      this._httpHandler(partOne, partTwo)
     } else {
-      self.log('[!] Invalid request: %s', request.url)
+      this.log('[!] Invalid request: %s', request.url)
       response.end('Invalid request')
     }
-  })
+  }.bind(this))
 
   this.server.listen(this.port, function () {
-    self.log('Listen server: http://%s:%s', ip.address(), self.port)
-  })
+    this.log('Listen server: http://%s:%s', ip.address(), this.port)
+  }.bind(this))
 
   this.service = new Service.LockMechanism(this.name)
 }
