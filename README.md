@@ -40,7 +40,7 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 ### Additional options
 | Key | Description | Default |
 | --- | --- | --- |
-| `port` _(optional)_ | Port for your http listener | `2000` |
+| `port` _(optional)_ | Port for your HTTP listener (only one listener per port) | `2000` |
 | `timeout` _(optional)_ | Time (in milliseconds) until the accessory will be marked as _Not Responding_ if it is unreachable | `3000` |
 | `http_method` _(optional)_ | HTTP method used to communicate with the device | `GET` |
 | `username` _(optional)_ | Username if HTTP authentication is enabled | N/A |
