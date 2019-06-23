@@ -30,6 +30,8 @@ function HTTPLock (log, config) {
   this.timeout = config.timeout || 3000
   this.http_method = config.http_method || 'GET'
 
+  this.requestArray = ['lockTargetState', 'lockCurrentState']
+
   if (this.username != null && this.password != null) {
     this.auth = {
       user: this.username,
@@ -43,8 +45,7 @@ function HTTPLock (log, config) {
     var parts = request.url.split('/')
     var partOne = parts[parts.length - 2]
     var partTwo = parts[parts.length - 1]
-    var requestArray = ['lockTargetState', 'lockCurrentState']
-    if (requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
+    if (parts.length === 3 && this.requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
       this.log('[*] Handling request: %s', request.url)
       response.end('Handling request')
       this._httpHandler(partOne, partTwo)
@@ -69,15 +70,16 @@ HTTPLock.prototype = {
   },
 
   _httpHandler: function (characteristic, value) {
+    this.log('[*] Updating %s to: %s', characteristic, value)
     if (characteristic === 'lockCurrentState') {
-      this.log('[*] Updating lockCurrentState to: %s', value)
       this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(value)
     } else if (characteristic === 'lockTargetState') {
-      this.log('[*] Updating lockTargetState to: %s', value)
       this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(value)
       if (parseInt(value) === 0 && this.autoLock) {
         this.autoLockFunction()
       }
+    } else {
+      this.log('[!] Error: Unknown characteristic "%s" with value "%s"', characteristic, value)
     }
   },
 
