@@ -43,12 +43,12 @@ function HTTPLock (log, config) {
     var parts = request.url.split('/')
     var partOne = parts[parts.length - 2]
     var partTwo = parts[parts.length - 1]
-    if (parts.length === 3 && this.requestArray.indexOf(partOne) >= 0 && partTwo.length === 1) {
-      this.log('[*] Handling request: %s', request.url)
+    if (parts.length === 3 && this.requestArray.includes(partOne) && partTwo.length === 1) {
+      this.log('Handling request: %s', request.url)
       response.end('Handling request')
       this._httpHandler(partOne, partTwo)
     } else {
-      this.log.warn('[!] Invalid request: %s', request.url)
+      this.log.warn('Invalid request: %s', request.url)
       response.end('Invalid request')
     }
   }.bind(this))
@@ -56,8 +56,6 @@ function HTTPLock (log, config) {
   this.server.listen(this.port, function () {
     this.log('Listen server: http://%s:%s', ip.address(), this.port)
   }.bind(this))
-
-  this.log('%s initialized', this.name)
 
   this.service = new Service.LockMechanism(this.name)
 }
@@ -70,16 +68,20 @@ HTTPLock.prototype = {
   },
 
   _httpHandler: function (characteristic, value) {
-    this.log('[*] Updating %s to: %s', characteristic, value)
-    if (characteristic === 'lockCurrentState') {
-      this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(value)
-    } else if (characteristic === 'lockTargetState') {
-      this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(value)
-      if (parseInt(value) === 0 && this.autoLock) {
-        this.autoLockFunction()
-      }
-    } else {
-      this.log.warn('[!] Error: Unknown characteristic "%s" with value "%s"', characteristic, value)
+    switch (characteristic) {
+      case 'lockCurrentState':
+        this.log('Updating %s to: %s', characteristic, value)
+        this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(value)
+        break
+      case 'lockTargetState':
+        this.log('Updating %s to: %s', characteristic, value)
+        this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(value)
+        if (parseInt(value) === 0 && this.autoLock) {
+          this.autoLockFunction()
+        }
+        break
+      default:
+        this.log.warn('Unknown characteristic "%s" with value "%s"', characteristic, value)
     }
   },
 
@@ -99,13 +101,13 @@ HTTPLock.prototype = {
 
   setLockTargetState: function (value, callback) {
     var url = this.apiroute + '/setLockTargetState/' + value
-    this.log('[+] Setting lockTargetState: %s', url)
+    this.log('Setting lockTargetState: %s', url)
     this._httpRequest(url, '', this.http_method, function (error, response, responseBody) {
       if (error) {
-        this.log.warn('[!] Error setting lockTargetState: %s', error.message)
+        this.log.warn('Error setting lockTargetState: %s', error.message)
         callback(error)
       } else {
-        this.log('[*] Successfully set lockTargetState to: %s', value)
+        this.log('Successfully set lockTargetState to: %s', value)
         if (value === 0 && this.autoLock) {
           this.autoLockFunction()
         }
@@ -115,10 +117,10 @@ HTTPLock.prototype = {
   },
 
   autoLockFunction: function () {
-    this.log('[+] Waiting %s seconds for autolock', this.autoLockDelay)
+    this.log('Waiting %s seconds for autolock', this.autoLockDelay)
     setTimeout(() => {
       this.service.setCharacteristic(Characteristic.LockTargetState, 1)
-      this.log('[*] Autolocking...')
+      this.log('Autolocking...')
     }, this.autoLockDelay * 1000)
   },
 
