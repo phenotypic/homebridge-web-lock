@@ -1,6 +1,6 @@
 var Service, Characteristic
-const request = require('request')
 const packageJson = require('./package.json')
+const request = require('request')
 const ip = require('ip')
 const http = require('http')
 
@@ -15,7 +15,10 @@ function HTTPLock (log, config) {
 
   this.name = config.name
   this.apiroute = config.apiroute
+  this.pollInterval = config.pollInterval || 300
+
   this.port = config.port || 2000
+  this.requestArray = ['lockTargetState', 'lockCurrentState']
 
   this.autoLock = config.autoLock || false
   this.autoLockDelay = config.autoLockDelay || 10
@@ -29,8 +32,6 @@ function HTTPLock (log, config) {
   this.password = config.password || null
   this.timeout = config.timeout || 3000
   this.http_method = config.http_method || 'GET'
-
-  this.requestArray = ['lockTargetState', 'lockCurrentState']
 
   if (this.username != null && this.password != null) {
     this.auth = {
@@ -65,6 +66,27 @@ HTTPLock.prototype = {
   identify: function (callback) {
     this.log('Identify requested!')
     callback()
+  },
+
+  _getStatus: function (callback) {
+    var url = this.apiroute + '/status'
+    this.log('Getting status: %s', url)
+    this._httpRequest(url, '', 'GET', function (error, response, responseBody) {
+      if (error) {
+        this.log.warn('Error getting status: %s', error.message)
+        this.service.getCharacteristic(Characteristic.CurrentDoorState).updateValue(new Error('Error getting status'))
+        this.retryStatus()
+        callback(error)
+      } else {
+        this.log('Device response: %s', responseBody)
+        var json = JSON.parse(responseBody)
+        this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(json.lockCurrentState)
+        this.log('Updated lockCurrentState: %s', json.lockCurrentState)
+        this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
+        this.log('Updated lockTargetState: %s', json.lockTargetState)
+        callback()
+      }
+    }.bind(this))
   },
 
   _httpHandler: function (characteristic, value) {
@@ -125,9 +147,6 @@ HTTPLock.prototype = {
   },
 
   getServices: function () {
-    this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(1)
-    this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(1)
-
     this.informationService = new Service.AccessoryInformation()
     this.informationService
       .setCharacteristic(Characteristic.Manufacturer, this.manufacturer)
@@ -138,6 +157,12 @@ HTTPLock.prototype = {
     this.service
       .getCharacteristic(Characteristic.LockTargetState)
       .on('set', this.setLockTargetState.bind(this))
+
+    this._getStatus(function () {})
+
+    setInterval(function () {
+      this._getStatus(function () {})
+    }.bind(this), this.pollInterval * 1000)
 
     return [this.informationService, this.service]
   }
