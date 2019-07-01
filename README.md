@@ -34,6 +34,7 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 ### Optional fields
 | Key | Description | Default |
 | --- | --- | --- |
+| `pollInterval` _(optional)_ | Time (in seconds) between device polls | `300` |
 | `autoLock` _(optional)_ | Whether your lock should re-lock after being opened| `false` |
 | `autoLockDelay` _(optional)_ | Whether your lock should re-lock after being opened (if enabled) | `10` |
 
@@ -54,17 +55,25 @@ This [homebridge](https://github.com/nfarina/homebridge) plugin exposes a web-ba
 
 Your API should be able to:
 
-1. Open/close the lock when it receives:
+1. Return JSON information when it receives `/status`:
+```
+{
+    "lockCurrentState": INT_VALUE,
+    "lockTargetState": INT_VALUE
+}
+```
+
+2. Open/close the lock when it receives:
 ```
 /lockTargetState/INT_VALUE
 ```
 
-2. Update `lockCurrentState` when it opens/closes by messaging the listen server:
+3. Update `lockCurrentState` when it opens/closes by messaging the listen server:
 ```
 /lockCurrentState/INT_VALUE
 ```
 
-3. Update `lockTargetState` following a manual override by messaging the listen server:
+4. Update `lockTargetState` following a manual override by messaging the listen server:
 ```
 /lockTargetState/INT_VALUE
 ```
