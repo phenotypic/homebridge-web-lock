@@ -1,6 +1,6 @@
 {
   "name": "homebridge-web-lock",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Homebridge plugin for a web-based lock",
   "main": "index.js",
   "engines": {
