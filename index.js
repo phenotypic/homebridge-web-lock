@@ -70,7 +70,7 @@ HTTPLock.prototype = {
 
   _getStatus: function (callback) {
     var url = this.apiroute + '/status'
-    this.log('Getting status: %s', url)
+    this.log.debug('Getting status: %s', url)
     this._httpRequest(url, '', 'GET', function (error, response, responseBody) {
       if (error) {
         this.log.warn('Error getting status: %s', error.message)
@@ -78,12 +78,12 @@ HTTPLock.prototype = {
         this.retryStatus()
         callback(error)
       } else {
-        this.log('Device response: %s', responseBody)
+        this.log.debug('Device response: %s', responseBody)
         var json = JSON.parse(responseBody)
         this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(json.lockCurrentState)
-        this.log('Updated lockCurrentState: %s', json.lockCurrentState)
+        this.log('Updated lockCurrentState to: %s', json.lockCurrentState)
         this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
-        this.log('Updated lockTargetState: %s', json.lockTargetState)
+        this.log('Updated lockTargetState to: %s', json.lockTargetState)
         callback()
       }
     }.bind(this))
@@ -92,12 +92,12 @@ HTTPLock.prototype = {
   _httpHandler: function (characteristic, value) {
     switch (characteristic) {
       case 'lockCurrentState':
-        this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(value)
+        this.log('Updated %s to: %s', characteristic, value)
         break
       case 'lockTargetState':
-        this.log('Updating %s to: %s', characteristic, value)
         this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(value)
+        this.log('Updated %s to: %s', characteristic, value)
         if (parseInt(value) === 0 && this.autoLock) {
           this.autoLockFunction()
         }
@@ -123,13 +123,13 @@ HTTPLock.prototype = {
 
   setLockTargetState: function (value, callback) {
     var url = this.apiroute + '/setLockTargetState/' + value
-    this.log('Setting lockTargetState: %s', url)
+    this.log.debug('Setting lockTargetState: %s', url)
     this._httpRequest(url, '', this.http_method, function (error, response, responseBody) {
       if (error) {
         this.log.warn('Error setting lockTargetState: %s', error.message)
         callback(error)
       } else {
-        this.log('Successfully set lockTargetState to: %s', value)
+        this.log('Set lockTargetState to: %s', value)
         if (value === 0 && this.autoLock) {
           this.autoLockFunction()
         }
