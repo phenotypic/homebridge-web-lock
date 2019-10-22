@@ -1,15 +1,15 @@
 {
   "name": "homebridge-web-lock",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Homebridge plugin for a web-based lock",
   "main": "index.js",
   "engines": {
-    "homebridge": "^0.4.46",
-    "node": "^10.0.0"
+    "homebridge": ">=0.4.50",
+    "node": ">=12.13.0"
   },
   "dependencies": {
-    "request": "^2.88.0",
-    "ip": "^1.1.5"
+    "request": ">=2.88.0",
+    "ip": ">=1.1.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
