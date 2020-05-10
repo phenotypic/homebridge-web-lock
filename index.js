@@ -81,9 +81,9 @@ HTTPLock.prototype = {
         this.log.debug('Device response: %s', responseBody)
         var json = JSON.parse(responseBody)
         this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(json.lockCurrentState)
-        this.log('Updated lockCurrentState to: %s', json.lockCurrentState)
+        this.log.debug('Updated lockCurrentState to: %s', json.lockCurrentState)
         this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
-        this.log('Updated lockTargetState to: %s', json.lockTargetState)
+        this.log.debug('Updated lockTargetState to: %s', json.lockTargetState)
         callback()
       }
     }.bind(this))
