@@ -73,17 +73,17 @@ Your API should be able to:
 
 2. Open/close the lock when it receives:
 ```
-/lockTargetState/INT_VALUE
+/lockTargetState?value=INT_VALUE
 ```
 
 3. Update `lockCurrentState` when it opens/closes by messaging the listen server:
 ```
-/lockCurrentState/INT_VALUE
+/lockCurrentState?value=INT_VALUE
 ```
 
 4. Update `lockTargetState` following a manual override by messaging the listen server:
 ```
-/lockTargetState/INT_VALUE
+/lockTargetState?value=INT_VALUE
 ```
 
 ## LockState Key
