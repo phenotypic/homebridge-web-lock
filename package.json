@@ -16,15 +16,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tommrodrigues/homebridge-web-lock.git"
+    "url": "git+https://github.com/phenotypic/homebridge-web-lock.git"
   },
   "keywords": [
     "homebridge-plugin"
   ],
-  "author": "Tom Rodrigues",
+  "author": "phenotypic",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Tommrodrigues/homebridge-web-lock/issues"
+    "url": "https://github.com/phenotypic/homebridge-web-lock/issues"
   },
-  "homepage": "https://github.com/Tommrodrigues/homebridge-web-lock#readme"
+  "homepage": "https://github.com/phenotypic/homebridge-web-lock#readme"
 }
