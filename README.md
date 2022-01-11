@@ -42,8 +42,8 @@ This [homebridge](https://github.com/homebridge/homebridge) plugin exposes a web
 ### Optional fields
 | Key | Description | Default |
 | --- | --- | --- |
-| `autoLock` | Whether your lock should re-lock after being opened| `false` |
-| `autoLockDelay` | Whether your lock should re-lock after being opened (if enabled) | `10` |
+| `autoLock` | Whether your lock should re-lock after being unlocked | `false` |
+| `autoLockDelay` | Whether your lock should re-lock after being unlocked (if enabled) | `10` |
 
 ### Additional options
 | Key | Description | Default |
@@ -71,12 +71,12 @@ Your API should be able to:
 }
 ```
 
-2. Open/close the lock when it receives:
+2. Lock or unlock the lock when it receives:
 ```
-/lockTargetState?value=INT_VALUE
+/setLockTargetState?value=INT_VALUE
 ```
 
-3. Update `lockCurrentState` when it opens/closes by messaging the listen server:
+3. Update `lockCurrentState` when it locks or unlocks by messaging the listen server:
 ```
 /lockCurrentState?value=INT_VALUE
 ```
