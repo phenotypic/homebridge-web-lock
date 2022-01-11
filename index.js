@@ -78,12 +78,16 @@ HTTPLock.prototype = {
         callback(error)
       } else {
         this.log.debug('Device response: %s', responseBody)
-        var json = JSON.parse(responseBody)
-        this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(json.lockCurrentState)
-        this.log.debug('Updated lockCurrentState to: %s', json.lockCurrentState)
-        this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
-        this.log.debug('Updated lockTargetState to: %s', json.lockTargetState)
-        callback()
+        try {
+          var json = JSON.parse(responseBody)
+          this.service.getCharacteristic(Characteristic.LockCurrentState).updateValue(json.lockCurrentState)
+          this.log.debug('Updated lockCurrentState to: %s', json.lockCurrentState)
+          this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
+          this.log.debug('Updated lockTargetState to: %s', json.lockTargetState)
+          callback()
+        } catch(e) {
+          this.log.warn('Error parsing status: %s', e.message)
+        }
       }
     }.bind(this))
   },
