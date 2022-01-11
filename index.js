@@ -85,7 +85,7 @@ HTTPLock.prototype = {
           this.service.getCharacteristic(Characteristic.LockTargetState).updateValue(json.lockTargetState)
           this.log.debug('Updated lockTargetState to: %s', json.lockTargetState)
           callback()
-        } catch(e) {
+        } catch (e) {
           this.log.warn('Error parsing status: %s', e.message)
         }
       }
